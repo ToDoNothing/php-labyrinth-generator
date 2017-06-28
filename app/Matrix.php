@@ -3,15 +3,16 @@ include 'Cell.php';
 
 class Matrix
 {
-    const HEIGHT = 10;
-    const WIDTH = 10;
+    const HEIGHT = 150;
+    const WIDTH = 150;
 
     const START_X = 1;
     const START_Y = 1;
 
     private $countVisited = 1;
+    private $visited = [];
 
-    private $matrix = [];
+    public $matrix = [];
 
     public function __construct()
     {
@@ -29,6 +30,7 @@ class Matrix
                     $lineArray[] = new Cell($y-1, $x-1,  Cell::WALL);
                 }
             }
+//            $this->matrix[1][1] = new Cell(1, 1, Cell::BLANK);
             $this->matrix[] = $lineArray;
         }
         return true;
@@ -51,7 +53,7 @@ class Matrix
         if (isset($leftCell) && $leftCell->type == Cell::BLANK){
             return $leftCell;
         }
-        return;
+        return false;
     }
 
     public function getRightBlankCell(Cell $cell)
@@ -60,7 +62,7 @@ class Matrix
         if (isset($rightCell) && $rightCell->type == Cell::BLANK){
             return $rightCell;
         }
-        return;
+        return false;
     }
 
     public function getTopBlankCell(Cell $cell)
@@ -69,7 +71,7 @@ class Matrix
         if (isset($topCell) && $topCell->type == Cell::BLANK){
             return $topCell;
         }
-        return;
+        return false;
     }
 
     public function getBottomBlankCell(Cell $cell)
@@ -78,7 +80,7 @@ class Matrix
         if (isset($bottomCell) && $bottomCell->type == Cell::BLANK){
             return $bottomCell;
         }
-        return;
+        return false;
     }
 
     private function removeWall(Cell $fromCell, Cell $toCell){
@@ -92,10 +94,11 @@ class Matrix
         $wallY = $fromCell->y + $addY;
 
         $newCell = new Cell($wallY, $wallX, Cell::VISITED);
-
+        $fromCell->type = Cell::VISITED;
+        $toCell->type = Cell::VISITED;
         $this->matrix[$wallY][$wallX] = $newCell;
 
-        $this->countVisited++;
+
 
         return true;
     }
