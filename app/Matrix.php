@@ -9,6 +9,8 @@ class Matrix
     const START_X = 1;
     const START_Y = 1;
 
+    private $countVisited = 1;
+
     private $matrix = [];
 
     public function __construct()
@@ -37,7 +39,7 @@ class Matrix
         $neighbours = $this->getNeighbours($currentCell);
         $randomNeighbour = $neighbours[array_rand($neighbours)];
         if (isset($randomNeighbour)){
-            if ($this->removeWall($currentCell, $randomNeighbour)){
+            if ($this->removeWall($currentCell, $randomNeighbour) && $this->countVisited<100){
                 $this->generate($randomNeighbour);
             }
         }
@@ -92,6 +94,8 @@ class Matrix
         $newCell = new Cell($wallY, $wallX, Cell::VISITED);
 
         $this->matrix[$wallY][$wallX] = $newCell;
+
+        $this->countVisited++;
 
         return true;
     }
