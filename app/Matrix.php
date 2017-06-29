@@ -3,13 +3,12 @@ include 'Cell.php';
 
 class Matrix
 {
-    const HEIGHT = 150;
-    const WIDTH = 150;
+    const HEIGHT = 100;
+    const WIDTH = 100;
 
     const START_X = 1;
     const START_Y = 1;
 
-    private $countVisited = 1;
     private $visited = [];
 
     public $matrix = [];
@@ -30,21 +29,49 @@ class Matrix
                     $lineArray[] = new Cell($y-1, $x-1,  Cell::WALL);
                 }
             }
-//            $this->matrix[1][1] = new Cell(1, 1, Cell::BLANK);
             $this->matrix[] = $lineArray;
         }
+        $this->matrix[1][1] = new Cell(1, 1, Cell::BLANK);
         return true;
     }
 
     public function generate(Cell $currentCell)
     {
-        $neighbours = $this->getNeighbours($currentCell);
-        $randomNeighbour = $neighbours[array_rand($neighbours)];
-        if (isset($randomNeighbour)){
-            if ($this->removeWall($currentCell, $randomNeighbour) && $this->countVisited<100){
-                $this->generate($randomNeighbour);
+        $startCell = $currentCell;
+        do{
+
+            $neighbours = $this->getNeighbours($startCell);
+            $randomNeighbour = $neighbours[array_rand($neighbours)];
+            if (isset($randomNeighbour)){
+                $this->visited[] = $startCell;
+                $this->removeWall($startCell, $randomNeighbour);
+                $startCell = $randomNeighbour;
+            } else {
+                $visitedCell = array_pop($this->visited);
+                if ($visitedCell) {
+                    $startCell = $visitedCell;
+                }
             }
-        }
+        } while (!empty($this->visited));
+    }
+
+    public function walk(Cell $startCell, $endCell)
+    {
+        $currentCell = $startCell;
+        do{
+            $neighbours = $this->getNeighbours($currentCell);
+            $randomNeighbour = $neighbours[array_rand($neighbours)];
+            if (isset($randomNeighbour)){
+                $this->visited[] = $currentCell;
+                $currentCell = $randomNeighbour;
+            } else {
+                $visitedCell = array_pop($this->visited);
+                if ($visitedCell) {
+                    $currentCell = $visitedCell;
+                }
+            }
+        }while($currentCell->x != $endCell->x && $currentCell->y != $endCell->y);
+        return 'SUCCESS';
     }
 
     public function getLeftBlankCell(Cell $cell)
