@@ -3,8 +3,8 @@ include 'Cell.php';
 
 class Matrix
 {
-    const HEIGHT = 100;
-    const WIDTH = 100;
+    const HEIGHT = 200;
+    const WIDTH = 200;
 
     const START_X = 1;
     const START_Y = 1;
@@ -32,6 +32,8 @@ class Matrix
             $this->matrix[] = $lineArray;
         }
         $this->matrix[1][1] = new Cell(1, 1, Cell::BLANK);
+        $this->matrix[1][0] = new Cell(1, 0, Cell::VISITED);
+        $this->matrix[self::HEIGHT-3][self::WIDTH-2] = new Cell(self::HEIGHT-3, self::WIDTH-2, Cell::VISITED);
         return true;
     }
 
@@ -58,53 +60,57 @@ class Matrix
     public function walk(Cell $startCell, $endCell)
     {
         $currentCell = $startCell;
+        $currentCell->type = Cell::WALK_VISITED;
         do{
-            $neighbours = $this->getNeighbours($currentCell);
+            $neighbours = $this->getNeighbours($currentCell, Cell::VISITED,1);
             $randomNeighbour = $neighbours[array_rand($neighbours)];
             if (isset($randomNeighbour)){
                 $this->visited[] = $currentCell;
+                $currentCell->type = Cell::WALK_VISITED;
                 $currentCell = $randomNeighbour;
             } else {
+                $currentCell->type = Cell::DEAD_BLOCK;
                 $visitedCell = array_pop($this->visited);
                 if ($visitedCell) {
                     $currentCell = $visitedCell;
                 }
             }
         }while($currentCell->x != $endCell->x && $currentCell->y != $endCell->y);
+        $currentCell->type = Cell::WALK_VISITED;
         return 'SUCCESS';
     }
 
-    public function getLeftBlankCell(Cell $cell)
+    public function getLeftBlankCell(Cell $cell, $type = Cell::BLANK, $padding = 2)
     {
-        $leftCell = $this->matrix[$cell->y][$cell->x-2];
-        if (isset($leftCell) && $leftCell->type == Cell::BLANK){
+        $leftCell = $this->matrix[$cell->y][$cell->x-$padding];
+        if (isset($leftCell) && $leftCell->type == $type){
             return $leftCell;
         }
         return false;
     }
 
-    public function getRightBlankCell(Cell $cell)
+    public function getRightBlankCell(Cell $cell, $type = Cell::BLANK, $padding = 2)
     {
-        $rightCell = $this->matrix[$cell->y][$cell->x+2];
-        if (isset($rightCell) && $rightCell->type == Cell::BLANK){
+        $rightCell = $this->matrix[$cell->y][$cell->x+$padding];
+        if (isset($rightCell) && $rightCell->type == $type){
             return $rightCell;
         }
         return false;
     }
 
-    public function getTopBlankCell(Cell $cell)
+    public function getTopBlankCell(Cell $cell, $type = Cell::BLANK, $padding = 2)
     {
-        $topCell = $this->matrix[$cell->y+2][$cell->x];
-        if (isset($topCell) && $topCell->type == Cell::BLANK){
+        $topCell = $this->matrix[$cell->y+$padding][$cell->x];
+        if (isset($topCell) && $topCell->type == $type){
             return $topCell;
         }
         return false;
     }
 
-    public function getBottomBlankCell(Cell $cell)
+    public function getBottomBlankCell(Cell $cell, $type = Cell::BLANK, $padding = 2)
     {
-        $bottomCell = $this->matrix[$cell->y-2][$cell->x];
-        if (isset($bottomCell) && $bottomCell->type == Cell::BLANK){
+        $bottomCell = $this->matrix[$cell->y-$padding][$cell->x];
+        if (isset($bottomCell) && $bottomCell->type == $type){
             return $bottomCell;
         }
         return false;
@@ -130,13 +136,13 @@ class Matrix
         return true;
     }
 
-    public function getNeighbours(Cell $cell):array {
+    public function getNeighbours(Cell $cell, $type = Cell::BLANK, $padding = 2):array {
         $arrCells = [];
 
-        if ($this->getLeftBlankCell($cell)) $arrCells[]= $this->getLeftBlankCell($cell);
-        if ($this->getRightBlankCell($cell)) $arrCells[]= $this->getRightBlankCell($cell);
-        if ($this->getTopBlankCell($cell)) $arrCells[]= $this->getTopBlankCell($cell);
-        if ($this->getBottomBlankCell($cell)) $arrCells[]= $this->getBottomBlankCell($cell);
+        if ($this->getLeftBlankCell($cell, $type, $padding)) $arrCells[]= $this->getLeftBlankCell($cell, $type, $padding);
+        if ($this->getRightBlankCell($cell, $type, $padding)) $arrCells[]= $this->getRightBlankCell($cell, $type, $padding);
+        if ($this->getTopBlankCell($cell, $type, $padding)) $arrCells[]= $this->getTopBlankCell($cell, $type, $padding);
+        if ($this->getBottomBlankCell($cell, $type, $padding)) $arrCells[]= $this->getBottomBlankCell($cell, $type, $padding);
 
         return $arrCells;
     }

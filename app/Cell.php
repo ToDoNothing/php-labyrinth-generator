@@ -12,6 +12,7 @@ class Cell
     const WALL = 1;
     const DEAD_BLOCK = 2;
     const VISITED = 3;
+    const WALK_VISITED = 4;
 
     public $x;
     public $y;
