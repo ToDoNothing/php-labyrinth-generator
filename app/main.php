@@ -1,15 +1,19 @@
 <?php
 include 'Matrix.php';
-ini_set('memory_limit', '256M');
-$matrix = new Matrix();
+ini_set('memory_limit', $argv[3] ? (int)$argv[3] . 'M' :'256M');
+
+$labyrinthHeigth = $argv[1] ? $argv[1] : 100;
+$labyrinthWidth = $argv[2] ? $argv[2] : 100;
+
+$matrix = new Matrix($labyrinthHeigth, $labyrinthWidth);
 
 $cell = new Cell(1, 1, Cell::BLANK);
 
-$arrCells = $matrix->generate($matrix->matrix[1][1]);
-$endCell = new Cell(Matrix::WIDTH - 2, Matrix::HEIGHT - 2, Cell::BLANK);
+$matrix->generate($matrix->matrix[1][1]);
+$endCell = new Cell($labyrinthHeigth - 2, $labyrinthWidth - 2, Cell::BLANK);
 echo $matrix->walk($cell, $endCell);
 
-$im = imagecreate(Matrix::WIDTH - 1, Matrix::HEIGHT - 1);
+$im = imagecreate($labyrinthWidth - 1, $labyrinthHeigth - 1);
 
 $black = imagecolorallocate($im, 0, 0, 0);
 
@@ -33,5 +37,3 @@ foreach ($matrix->matrix as $keyY => $y) {
 imagepng($im, 'result.png');
 
 imagedestroy($im);
-
-var_dump($arrCells);

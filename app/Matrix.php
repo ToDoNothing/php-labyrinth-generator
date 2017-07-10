@@ -3,26 +3,24 @@ include 'Cell.php';
 
 class Matrix
 {
-    const HEIGHT = 200;
-    const WIDTH = 200;
-
-    const START_X = 1;
-    const START_Y = 1;
-
     private $visited = [];
+	private $height;
+    private $width;
 
     public $matrix = [];
 
-    public function __construct()
+    public function __construct(int $height = 100, int $width = 100)
     {
+    	$this->height = $height;
+    	$this->width = $width;
         $this->initialize();
     }
 
     private function initialize()
     {
-        for ($y = 1; $y < self::HEIGHT; $y++) {
+        for ($y = 1; $y < $this->height; $y++) {
             $lineArray = [];
-            for ($x = 1; $x < self::WIDTH; $x++) {
+            for ($x = 1; $x < $this->width; $x++) {
                 if ($y % 2 == 0 && $x % 2 == 0) {
                     $lineArray[] = new Cell($y - 1, $x - 1, Cell::BLANK);
                 } else {
@@ -33,7 +31,7 @@ class Matrix
         }
         $this->matrix[1][1] = new Cell(1, 1, Cell::BLANK);
         $this->matrix[1][0] = new Cell(1, 0, Cell::VISITED);
-        $this->matrix[self::HEIGHT - 3][self::WIDTH - 2] = new Cell(self::HEIGHT - 3, self::WIDTH - 2, Cell::VISITED);
+        $this->matrix[$this->height - 3][$this->width - 2] = new Cell($this->height - 3, $this->width - 2, Cell::VISITED);
         return true;
     }
 
@@ -131,7 +129,6 @@ class Matrix
         $fromCell->type = Cell::VISITED;
         $toCell->type = Cell::VISITED;
         $this->matrix[$wallY][$wallX] = $newCell;
-
 
         return true;
     }
