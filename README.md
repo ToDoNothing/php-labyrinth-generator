@@ -1,1 +1,1 @@
-##PHP Labyrinth Generator and Solver
+## PHP Labyrinth Generator and Solver
